@@ -38,7 +38,7 @@ export const Config: React.FC = () => {
   return (
     <div className="p-4 lg:p-10 space-y-10 max-w-4xl mx-auto">
       <div>
-        <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-gradient">SYSTEM CONFIG</h1>
+        <h1 className="text-4xl lg:text-5xl font-black tracking-tighter text-gradient">SETTINGS</h1>
         <p className="text-foreground/30 text-base font-medium mt-2">Fine-tune Sentinel's autonomous intelligence and security parameters.</p>
       </div>
 

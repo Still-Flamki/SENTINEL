@@ -20,19 +20,20 @@ export const useTransactionStore = create<TransactionState>((set) => ({
   addTransaction: (tx) => set((state) => {
     const newTransactions = [tx, ...state.transactions];
     const newLiveFeed = [tx, ...state.liveFeed].slice(0, 40);
-    const blocked = newTransactions.filter(t => t.status === 'BLOCKED').length;
-    const rate = newTransactions.length > 0 ? (blocked / newTransactions.length) * 100 : 0;
+    const isBlocked = tx.status === 'BLOCKED';
+    const newBlockedCount = state.blockedCount + (isBlocked ? 1 : 0);
+    const rate = newTransactions.length > 0 ? (newBlockedCount / newTransactions.length) * 100 : 0;
 
     return {
       transactions: newTransactions,
       liveFeed: newLiveFeed,
-      blockedCount: blocked,
+      blockedCount: newBlockedCount,
       fraudRate: rate,
     };
   }),
 
   setTransactions: (txs) => set(() => {
-    const blocked = txs.filter(t => t.status === 'BLOCKED').length;
+    const blocked = txs.reduce((acc, t) => acc + (t.status === 'BLOCKED' ? 1 : 0), 0);
     const rate = txs.length > 0 ? (blocked / txs.length) * 100 : 0;
     return {
       transactions: txs,
@@ -43,15 +44,25 @@ export const useTransactionStore = create<TransactionState>((set) => ({
   }),
 
   updateTransaction: (id, updates) => set((state) => {
-    const newTransactions = state.transactions.map(t => t.id === id ? { ...t, ...updates } : t);
+    let blockedDelta = 0;
+    const newTransactions = state.transactions.map(t => {
+      if (t.id === id) {
+        const updated = { ...t, ...updates };
+        if (t.status !== 'BLOCKED' && updated.status === 'BLOCKED') blockedDelta = 1;
+        if (t.status === 'BLOCKED' && updated.status !== 'BLOCKED') blockedDelta = -1;
+        return updated;
+      }
+      return t;
+    });
+    
     const newLiveFeed = state.liveFeed.map(t => t.id === id ? { ...t, ...updates } : t);
-    const blocked = newTransactions.filter(t => t.status === 'BLOCKED').length;
-    const rate = newTransactions.length > 0 ? (blocked / newTransactions.length) * 100 : 0;
+    const newBlockedCount = state.blockedCount + blockedDelta;
+    const rate = newTransactions.length > 0 ? (newBlockedCount / newTransactions.length) * 100 : 0;
 
     return {
       transactions: newTransactions,
       liveFeed: newLiveFeed,
-      blockedCount: blocked,
+      blockedCount: newBlockedCount,
       fraudRate: rate,
     };
   }),

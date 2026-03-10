@@ -31,8 +31,8 @@ import { Transaction, AgentResult } from '../../types';
 
 // --- Sub-components ---
 
-const SparkCard: React.FC<{ title: string; value: string; trend: string; data: any[] }> = ({ title, value, trend, data }) => (
-  <div className="card p-6 flex flex-col gap-4 group hover:scale-[1.02] transition-all duration-700">
+const SparkCard = React.memo(({ title, value, trend, data }: { title: string; value: string; trend: string; data: any[] }) => (
+  <div className="card p-6 flex flex-col gap-4 group hover:scale-[1.02] transition-all duration-500">
     <div className="flex justify-between items-start">
       <span className="text-[11px] font-black text-foreground/30 uppercase tracking-[0.2em]">{title}</span>
       <span className={cn(
@@ -59,14 +59,22 @@ const SparkCard: React.FC<{ title: string; value: string; trend: string; data: a
       </div>
     </div>
   </div>
-);
+));
 
-const LiveFeedItem: React.FC<{ tx: Transaction }> = ({ tx }) => (
+const LiveFeedItem = React.memo(({ tx }: { tx: Transaction }) => (
   <motion.div 
-    initial={{ opacity: 0, x: -20 }}
-    animate={{ opacity: 1, x: 0 }}
+    layout
+    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+    animate={{ opacity: 1, y: 0, scale: 1 }}
+    exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.2 } }}
+    transition={{ 
+      type: "spring", 
+      stiffness: 500, 
+      damping: 30, 
+      mass: 0.8 
+    }}
     className={cn(
-      "p-4 border-b border-white/5 flex items-center gap-4 hover:bg-white/5 transition-all duration-300 cursor-pointer group",
+      "p-4 border-b border-border flex items-center gap-4 hover:bg-surface transition-colors duration-200 cursor-pointer group",
       tx.status === 'BLOCKED' && "bg-danger/5 border-l-2 border-l-danger"
     )}
   >
@@ -93,36 +101,36 @@ const LiveFeedItem: React.FC<{ tx: Transaction }> = ({ tx }) => (
     </div>
     <ChevronRight size={14} className="text-foreground/20 opacity-0 group-hover:opacity-100 transition-all translate-x-[-4px] group-hover:translate-x-0" />
   </motion.div>
-);
+));
 
-const AgentCard: React.FC<{ agent: string; icon: any; result?: AgentResult; isAnalyzing: boolean }> = ({ agent, icon: Icon, result, isAnalyzing }) => (
-  <div className="card p-5 flex flex-col gap-4 relative overflow-hidden group">
+const AgentCard = React.memo(({ agent, icon: Icon, result, isAnalyzing }: { agent: string; icon: any; result?: AgentResult; isAnalyzing: boolean }) => (
+  <div className="card p-5 flex flex-col gap-4 relative overflow-hidden group transition-transform duration-300 hover:scale-[1.02]">
     {isAnalyzing && (
       <motion.div 
         className="absolute bottom-0 left-0 h-1 bg-primary shadow-[0_0_15px_rgba(0,122,255,0.8)]"
         initial={{ width: 0 }}
         animate={{ width: '100%' }}
-        transition={{ duration: 2, repeat: Infinity }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
       />
     )}
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-white/5 border border-white/10 rounded-xl group-hover:bg-white/10 transition-colors">
+        <div className="p-2 bg-surface border border-border rounded-xl group-hover:bg-primary/10 transition-colors">
           <Icon size={18} className="text-primary" />
         </div>
         <span className="text-xs font-black uppercase tracking-widest text-foreground/60">{agent}</span>
       </div>
       <div className={cn(
-        "w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)]",
-        isAnalyzing ? "bg-primary animate-pulse" : (result ? (result.verdict === 'HIGH' ? "bg-danger" : "bg-success") : "bg-white/5")
+        "w-3 h-3 rounded-full shadow-[0_0_10px_rgba(0,0,0,0.1)] dark:shadow-[0_0_10px_rgba(0,0,0,0.5)]",
+        isAnalyzing ? "bg-primary animate-pulse" : (result ? (result.verdict === 'HIGH' ? "bg-danger" : "bg-success") : "bg-surface")
       )} />
     </div>
     
     <div className="flex-1">
       {isAnalyzing ? (
         <div className="space-y-3">
-          <div className="h-4 bg-white/5 rounded-lg w-full animate-pulse" />
-          <div className="h-4 bg-white/5 rounded-lg w-2/3 animate-pulse" />
+          <div className="h-4 bg-surface rounded-lg w-full animate-pulse" />
+          <div className="h-4 bg-surface rounded-lg w-2/3 animate-pulse" />
         </div>
       ) : result ? (
         <div className="space-y-2">
@@ -135,7 +143,7 @@ const AgentCard: React.FC<{ agent: string; icon: any; result?: AgentResult; isAn
     </div>
 
     {result && (
-      <div className="flex items-center justify-between mt-2 pt-4 border-t border-white/5">
+      <div className="flex items-center justify-between mt-2 pt-4 border-t border-border">
         <span className="text-[10px] font-bold text-foreground/40 uppercase tracking-widest">Confidence: {(result.confidence * 100).toFixed(0)}%</span>
         <div className={cn(
           "px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest border",
@@ -146,7 +154,7 @@ const AgentCard: React.FC<{ agent: string; icon: any; result?: AgentResult; isAn
       </div>
     )}
   </div>
-);
+));
 
 // --- Main Screen ---
 
@@ -196,7 +204,7 @@ export const WarRoom: React.FC = () => {
               LIVE
             </span>
           </div>
-          <div className="card flex-1 overflow-hidden flex flex-col max-h-[700px] bg-white/[0.01]">
+          <div className="card flex-1 overflow-hidden flex flex-col max-h-[700px] bg-surface">
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               <AnimatePresence initial={false}>
                 {liveFeed.map((tx) => (
@@ -209,7 +217,7 @@ export const WarRoom: React.FC = () => {
 
         {/* Agent Council */}
         <div className="col-span-12 xl:col-span-6 flex flex-col gap-6">
-          <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-white/40">
+          <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-foreground/40">
             <ShieldCheck size={18} className="text-primary" />
             Agent Council
           </h3>
@@ -221,7 +229,7 @@ export const WarRoom: React.FC = () => {
           </div>
           
           {/* Orchestrator Panel */}
-          <div className="card p-10 bg-white/[0.02] border-primary/30 relative overflow-hidden shadow-2xl">
+          <div className="card p-10 bg-surface border-primary/30 relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
             
             <div className="flex flex-col sm:flex-row justify-between items-center gap-6 mb-10 relative z-10">
@@ -236,15 +244,16 @@ export const WarRoom: React.FC = () => {
                 <span className="text-7xl font-black tracking-tighter text-success drop-shadow-[0_0_30px_rgba(52,199,89,0.4)]">SAFE</span>
                 <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.3em] mt-2">Final Decision</span>
               </div>
-              <div className="hidden md:block h-20 w-px bg-white/10" />
+              <div className="hidden md:block h-20 w-px bg-border" />
               <div className="flex-1 w-full grid grid-cols-2 sm:grid-cols-4 gap-8">
                 {['VEL', 'GEO', 'BEH', 'PAT'].map((label, i) => (
                   <div key={i} className="flex flex-col gap-3">
                     <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">{label}</span>
-                    <div className="h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
+                    <div className="h-3 bg-surface rounded-full overflow-hidden border border-border shadow-inner">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: '75%' }}
+                        transition={{ type: "spring", stiffness: 100, damping: 20, delay: i * 0.1 }}
                         className="h-full bg-primary shadow-[0_0_15px_rgba(0,122,255,0.6)]" 
                       />
                     </div>
@@ -257,11 +266,11 @@ export const WarRoom: React.FC = () => {
 
         {/* World Map */}
         <div className="col-span-12 xl:col-span-3 flex flex-col gap-8">
-          <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-white/40">
+          <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-foreground/40">
             <Globe size={18} className="text-primary drop-shadow-[0_0_8px_rgba(0,122,255,0.5)]" />
             World Risk Map
           </h3>
-          <div className="card flex-1 bg-white/[0.01] p-6 min-h-[400px] relative overflow-hidden group shadow-2xl">
+          <div className="card flex-1 bg-surface p-6 min-h-[400px] relative overflow-hidden group shadow-2xl">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
             <div className="w-full h-full flex items-center justify-center">
               <ComposableMap projectionConfig={{ scale: 180 }}>
@@ -271,12 +280,12 @@ export const WarRoom: React.FC = () => {
                       <Geography
                         key={geo.rsmKey}
                         geography={geo}
-                        fill="rgba(255, 255, 255, 0.05)"
-                        stroke="rgba(255, 255, 255, 0.1)"
+                        fill="var(--surface)"
+                        stroke="var(--border)"
                         strokeWidth={0.5}
                         style={{
                           default: { outline: "none" },
-                          hover: { fill: "rgba(255, 255, 255, 0.1)", outline: "none" },
+                          hover: { fill: "var(--primary)", fillOpacity: 0.1, outline: "none" },
                           pressed: { outline: "none" },
                         }}
                       />
@@ -323,7 +332,7 @@ export const WarRoom: React.FC = () => {
       </div>
 
       {/* Bottom Timeline */}
-      <div className="card p-8 h-64 bg-white/[0.01] shadow-2xl">
+      <div className="card p-8 h-64 bg-surface shadow-2xl">
         <div className="flex justify-between items-center mb-8">
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">Risk Timeline (24h)</span>
           <div className="flex gap-6 text-[10px] font-black uppercase tracking-widest">
@@ -340,12 +349,12 @@ export const WarRoom: React.FC = () => {
         <div className="h-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={timelineData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
               <XAxis dataKey="time" hide />
               <YAxis hide />
               <Tooltip 
-                contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem', backdropFilter: 'blur(10px)' }}
-                itemStyle={{ color: '#fff', fontSize: '10px', fontWeight: 'bold' }}
+                contentStyle={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '1rem', backdropFilter: 'blur(10px)' }}
+                itemStyle={{ color: 'var(--fg)', fontSize: '10px', fontWeight: 'bold' }}
               />
               <Line type="monotone" dataKey="val" stroke="#007AFF" strokeWidth={4} dot={false} />
             </LineChart>

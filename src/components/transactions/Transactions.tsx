@@ -12,7 +12,7 @@ import {
   ShieldAlert,
   Clock
 } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTransactionStore } from '../../stores/transactionStore';
 import { Transaction, RiskLevel, TransactionStatus } from '../../types';
 import { cn } from '../../utils';
@@ -59,20 +59,20 @@ export const Transactions: React.FC = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="card p-6 flex flex-col md:flex-row gap-6 items-center bg-white/[0.01]">
+      <div className="card p-6 flex flex-col md:flex-row gap-6 items-center bg-surface">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-foreground/20" size={20} />
           <input 
             type="text" 
             placeholder="Search by merchant, ID, or amount..." 
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl pl-14 pr-6 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-white/10 transition-all placeholder:text-foreground/20 shadow-inner"
+            className="w-full bg-surface border border-border rounded-2xl pl-14 pr-6 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:bg-surface transition-all placeholder:text-foreground/20 shadow-inner"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-4 w-full md:w-auto">
           <select 
-            className="bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all appearance-none cursor-pointer min-w-[150px]"
+            className="bg-surface border border-border rounded-2xl px-5 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 transition-all appearance-none cursor-pointer min-w-[150px]"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
           >
@@ -82,7 +82,7 @@ export const Transactions: React.FC = () => {
             <option value="BLOCKED">Blocked</option>
             <option value="INVESTIGATING">Investigating</option>
           </select>
-          <button className="p-3.5 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-white/10 transition-all shadow-lg active:scale-95">
+          <button className="p-3.5 bg-surface border border-border rounded-2xl hover:bg-surface transition-all shadow-lg active:scale-95">
             <ArrowUpDown size={20} className="text-foreground/40" />
           </button>
         </div>
@@ -103,72 +103,84 @@ export const Transactions: React.FC = () => {
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-foreground/30 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
-              {paginatedTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-white/[0.02] transition-all group cursor-pointer">
-                  <td className="px-8 py-6">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-black tracking-tight">{new Date(tx.date).toLocaleTimeString([], { hour12: false })}</span>
-                      <span className="text-[10px] text-foreground/20 font-black uppercase tracking-widest">{new Date(tx.date).toLocaleDateString()}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className="text-xs font-mono text-foreground/30 tracking-widest">{tx.id}</span>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-white/[0.03] border border-white/10 flex items-center justify-center font-black text-xs shadow-inner">
-                        {tx.merchant[0]}
+            <tbody className="divide-y divide-border">
+              <AnimatePresence mode="popLayout">
+                {paginatedTransactions.map((tx) => (
+                  <motion.tr 
+                    key={tx.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="hover:bg-surface transition-all group cursor-pointer"
+                  >
+                    <td className="px-8 py-6">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-black tracking-tight">{new Date(tx.date).toLocaleTimeString([], { hour12: false })}</span>
+                        <span className="text-[10px] text-foreground/20 font-black uppercase tracking-widest">{new Date(tx.date).toLocaleDateString()}</span>
                       </div>
-                      <span className="text-sm font-black tracking-tight">{tx.merchant}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <span className={cn("text-base font-black tracking-tighter", tx.status === 'BLOCKED' ? "text-danger" : "text-white")}>
-                      ${tx.amount.toFixed(2)}
-                    </span>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-4">
-                      <div className="flex-1 h-2 w-20 bg-white/5 rounded-full overflow-hidden border border-white/5 shadow-inner">
-                        <div 
-                          className={cn(
-                            "h-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.2)]",
-                            tx.riskScore > 70 ? "bg-danger" : tx.riskScore > 40 ? "bg-warning" : "bg-success"
-                          )} 
-                          style={{ width: `${tx.riskScore}%` }}
-                        />
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="text-xs font-mono text-foreground/30 tracking-widest">{tx.id}</span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center font-black text-xs shadow-inner">
+                          {tx.merchant[0]}
+                        </div>
+                        <span className="text-sm font-black tracking-tight">{tx.merchant}</span>
                       </div>
-                      <span className="text-xs font-black tracking-widest">{tx.riskScore}</span>
-                    </div>
-                  </td>
-                  <td className="px-8 py-6">
-                    <div className={cn(
-                      "badge inline-flex items-center gap-2",
-                      tx.status === 'SAFE' && "bg-success/20 text-success border-success/30",
-                      tx.status === 'REVIEW' && "bg-warning/20 text-warning border-warning/30",
-                      tx.status === 'BLOCKED' && "bg-danger/20 text-danger border-danger/30",
-                      tx.status === 'INVESTIGATING' && "bg-primary/20 text-primary border-primary/30"
-                    )}>
-                      {tx.status === 'SAFE' && <ShieldCheck size={12} />}
-                      {tx.status === 'REVIEW' && <Clock size={12} />}
-                      {tx.status === 'BLOCKED' && <ShieldAlert size={12} />}
-                      {tx.status}
-                    </div>
-                  </td>
-                  <td className="px-8 py-6 text-right">
-                    <button className="p-3 hover:bg-white/10 rounded-xl transition-all active:scale-90">
-                      <MoreVertical size={18} className="text-foreground/20 group-hover:text-foreground/60" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className={cn("text-base font-black tracking-tighter", tx.status === 'BLOCKED' ? "text-danger" : "text-foreground")}>
+                        ${tx.amount.toFixed(2)}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className="flex items-center gap-4">
+                        <div className="flex-1 h-2 w-20 bg-surface rounded-full overflow-hidden border border-border shadow-inner">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${tx.riskScore}%` }}
+                            transition={{ duration: 1, ease: "easeOut" }}
+                            className={cn(
+                              "h-full transition-all duration-1000 shadow-[0_0_10px_rgba(255,255,255,0.1)]",
+                              tx.riskScore > 70 ? "bg-danger" : tx.riskScore > 40 ? "bg-warning" : "bg-success"
+                            )} 
+                          />
+                        </div>
+                        <span className="text-xs font-black tracking-widest">{tx.riskScore}</span>
+                      </div>
+                    </td>
+                    <td className="px-8 py-6">
+                      <div className={cn(
+                        "badge inline-flex items-center gap-2",
+                        tx.status === 'SAFE' && "bg-success/20 text-success border-success/30",
+                        tx.status === 'REVIEW' && "bg-warning/20 text-warning border-warning/30",
+                        tx.status === 'BLOCKED' && "bg-danger/20 text-danger border-danger/30",
+                        tx.status === 'INVESTIGATING' && "bg-primary/20 text-primary border-primary/30"
+                      )}>
+                        {tx.status === 'SAFE' && <ShieldCheck size={12} />}
+                        {tx.status === 'REVIEW' && <Clock size={12} />}
+                        {tx.status === 'BLOCKED' && <ShieldAlert size={12} />}
+                        {tx.status}
+                      </div>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <button className="p-3 hover:bg-surface rounded-xl transition-all active:scale-90">
+                        <MoreVertical size={18} className="text-foreground/20 group-hover:text-foreground/60" />
+                      </button>
+                    </td>
+                  </motion.tr>
+                ))}
+              </AnimatePresence>
             </tbody>
           </table>
         </div>
 
         {/* Pagination */}
-        <div className="px-8 py-6 bg-white/[0.02] border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="px-8 py-6 bg-surface border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6">
           <span className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/20">
             Showing {Math.min(filteredTransactions.length, (currentPage - 1) * itemsPerPage + 1)}-{Math.min(filteredTransactions.length, currentPage * itemsPerPage)} of {filteredTransactions.length} results
           </span>
@@ -176,7 +188,7 @@ export const Transactions: React.FC = () => {
             <button 
               disabled={currentPage === 1}
               onClick={() => setCurrentPage(p => p - 1)}
-              className="p-2.5 bg-white/[0.03] border border-white/10 rounded-xl disabled:opacity-20 hover:bg-white/10 transition-all shadow-lg active:scale-90"
+              className="p-2.5 bg-surface border border-border rounded-xl disabled:opacity-20 hover:bg-surface transition-all shadow-lg active:scale-90"
             >
               <ChevronLeft size={18} />
             </button>
@@ -187,7 +199,7 @@ export const Transactions: React.FC = () => {
                   onClick={() => setCurrentPage(i + 1)}
                   className={cn(
                     "w-10 h-10 text-[10px] font-black rounded-xl transition-all shadow-lg active:scale-90",
-                    currentPage === i + 1 ? "bg-primary text-white shadow-[0_0_15px_rgba(0,122,255,0.4)]" : "bg-white/[0.03] border border-white/10 hover:bg-white/10"
+                    currentPage === i + 1 ? "bg-primary text-white shadow-[0_0_15px_rgba(0,122,255,0.4)]" : "bg-surface border border-border hover:bg-surface"
                   )}
                 >
                   {i + 1}
@@ -197,7 +209,7 @@ export const Transactions: React.FC = () => {
             <button 
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage(p => p + 1)}
-              className="p-2.5 bg-white/[0.03] border border-white/10 rounded-xl disabled:opacity-20 hover:bg-white/10 transition-all shadow-lg active:scale-90"
+              className="p-2.5 bg-surface border border-border rounded-xl disabled:opacity-20 hover:bg-surface transition-all shadow-lg active:scale-90"
             >
               <ChevronRight size={18} />
             </button>
