@@ -12,7 +12,13 @@ import {
   ChevronRight,
   Bell,
   User,
-  Cpu
+  Cpu,
+  Lock,
+  Zap,
+  Share2,
+  ClipboardCheck,
+  Users,
+  Bot
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { clsx, type ClassValue } from 'clsx';
@@ -36,16 +42,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onScreenChange }
   const [isCollapsed, setIsCollapsed] = useState(false);
 
   const navItems = [
-    { id: 'vault', label: 'Account Vault', icon: Shield },
-    { id: 'warroom', label: 'War Room', icon: LayoutDashboard },
+    { id: 'vault', label: 'Account Vault', icon: Lock },
+    { id: 'warroom', label: 'War Room', icon: Zap },
     { id: 'transactions', label: 'Transactions', icon: CreditCard },
     { id: 'intelligence', label: 'AI Council', icon: Cpu },
+    { id: 'agents', label: 'AI Agents', icon: Bot },
     { id: 'investigation', label: 'Investigation', icon: Search },
-    { id: 'ringmap', label: 'Fraud Ring Map', icon: Network },
+    { id: 'ringmap', label: 'Fraud Ring Map', icon: Share2 },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'casefiles', label: 'Case Files', icon: FileText },
-    { id: 'reports', label: 'Reports & Audits', icon: FileText },
-    { id: 'team', label: 'Team & Access', icon: User },
+    { id: 'reports', label: 'Reports & Audits', icon: ClipboardCheck },
+    { id: 'team', label: 'Team & Access', icon: Users },
   ];
 
   return (
@@ -185,6 +192,24 @@ export const Header: React.FC<{ title: string }> = ({ title }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
+  const navItems = [
+    { id: 'vault', label: 'Account Vault', icon: Lock },
+    { id: 'warroom', label: 'War Room', icon: Zap },
+    { id: 'transactions', label: 'Transactions', icon: CreditCard },
+    { id: 'intelligence', label: 'AI Council', icon: Cpu },
+    { id: 'agents', label: 'AI Agents', icon: Bot },
+    { id: 'investigation', label: 'Investigation', icon: Search },
+    { id: 'ringmap', label: 'Fraud Ring Map', icon: Share2 },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'casefiles', label: 'Case Files', icon: FileText },
+    { id: 'reports', label: 'Reports & Audits', icon: ClipboardCheck },
+    { id: 'team', label: 'Team & Access', icon: Users },
+    { id: 'config', label: 'Settings', icon: Settings },
+  ];
+
+  const activeItem = navItems.find(item => item.id === title) || navItems[1];
+  const Icon = activeItem.icon;
+
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
@@ -205,23 +230,26 @@ export const Header: React.FC<{ title: string }> = ({ title }) => {
 
   return (
     <header className="h-24 border-b border-border bg-surface backdrop-blur-[60px] sticky top-0 z-40 px-10 flex items-center justify-between shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-      <motion.div layout className="flex items-center gap-4 text-sm font-bold text-foreground/30">
-        <div className="scale-75 origin-left">
-          <Logo collapsed={true} />
+      <motion.div layout className="flex items-center gap-6">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary border border-primary/20 shadow-lg">
+            <Icon size={20} />
+          </div>
+          <div className="flex flex-col">
+            <AnimatePresence mode="wait">
+              <motion.h2 
+                key={activeItem.label}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 5 }}
+                className="text-xl font-black tracking-tighter text-foreground leading-none"
+              >
+                {activeItem.label}
+              </motion.h2>
+            </AnimatePresence>
+            <span className="text-[9px] font-black text-foreground/20 uppercase tracking-[0.3em] mt-1">Sentinel Platform</span>
+          </div>
         </div>
-        <ChevronRight size={16} className="text-foreground/10" />
-        <AnimatePresence mode="wait">
-          <motion.span 
-            key={title}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.3 }}
-            className="text-foreground font-black tracking-tighter text-lg capitalize"
-          >
-            {title.replace(/([A-Z])/g, ' $1')}
-          </motion.span>
-        </AnimatePresence>
       </motion.div>
 
       <div className="flex items-center gap-8">

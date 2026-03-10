@@ -63,12 +63,12 @@ export const NotificationDropdown: React.FC<{ onClose: () => void }> = ({ onClos
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      className="absolute top-full right-0 mt-4 w-96 bg-surface border border-border rounded-3xl shadow-2xl z-50 overflow-hidden backdrop-blur-3xl"
+      className="absolute top-full right-0 mt-4 w-96 bg-surface border border-border rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-3xl"
     >
-      <div className="p-6 border-b border-border flex items-center justify-between">
-        <h3 className="font-black tracking-tight text-lg">Notifications</h3>
-        <button className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity">
-          Mark all as read
+      <div className="p-6 border-b border-border flex items-center justify-between bg-surface/50">
+        <h3 className="font-black tracking-tight text-lg font-mono">NOTIFICATIONS</h3>
+        <button className="text-[10px] font-black uppercase tracking-widest text-primary hover:opacity-70 transition-opacity font-mono">
+          [ MARK ALL ]
         </button>
       </div>
       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
@@ -122,21 +122,21 @@ export const ProfileDropdown: React.FC<{ onClose: () => void }> = ({ onClose }) 
       initial={{ opacity: 0, y: 10, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 10, scale: 0.95 }}
-      className="absolute top-full right-0 mt-4 w-72 bg-surface border border-border rounded-3xl shadow-2xl z-50 overflow-hidden backdrop-blur-3xl"
+      className="absolute top-full right-0 mt-4 w-72 bg-surface border border-border rounded-xl shadow-2xl z-50 overflow-hidden backdrop-blur-3xl"
     >
       <div className="p-6 border-b border-border bg-foreground/5">
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-14 h-14 rounded-2xl bg-primary/20 flex items-center justify-center text-primary font-black text-xl border border-primary/20 shadow-xl">
+          <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-black text-xl border border-primary/20 shadow-[0_0_20px_rgba(0,255,148,0.1)]">
             JD
           </div>
           <div className="min-w-0">
-            <h3 className="font-black tracking-tight text-lg truncate">John Doe</h3>
-            <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30">Chief Security Officer</p>
+            <h3 className="font-black tracking-tight text-lg truncate font-mono">JOHN DOE</h3>
+            <p className="text-[10px] font-black uppercase tracking-widest text-foreground/30 font-mono">CHIEF SECURITY OFFICER</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-success/10 border border-success/20 rounded-full w-fit">
-          <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-          <span className="text-[10px] font-black text-success uppercase tracking-widest">System Active</span>
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/5 border border-primary/20 rounded-lg w-fit">
+          <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_var(--color-primary)]" />
+          <span className="text-[10px] font-black text-primary uppercase tracking-widest font-mono">NODE ACTIVE</span>
         </div>
       </div>
       

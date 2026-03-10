@@ -31,36 +31,6 @@ import { Transaction, AgentResult } from '../../types';
 
 // --- Sub-components ---
 
-const SparkCard = React.memo(({ title, value, trend, data }: { title: string; value: string; trend: string; data: any[] }) => (
-  <div className="card p-6 flex flex-col gap-4 group hover:scale-[1.02] transition-all duration-500">
-    <div className="flex justify-between items-start">
-      <span className="text-[11px] font-black text-foreground/30 uppercase tracking-[0.2em]">{title}</span>
-      <span className={cn(
-        "text-[10px] font-black px-3 py-1 rounded-full backdrop-blur-3xl border shadow-lg",
-        trend.startsWith('-') ? "bg-danger/20 text-danger border-danger/30" : "bg-success/20 text-success border-success/30"
-      )}>
-        {trend}
-      </span>
-    </div>
-    <div className="flex items-end justify-between gap-6">
-      <span className="text-4xl font-black tracking-tighter text-gradient">{value}</span>
-      <div className="h-12 w-28 opacity-40 group-hover:opacity-100 transition-all duration-700 filter drop-shadow-[0_0_10px_rgba(0,122,255,0.3)]">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data}>
-            <defs>
-              <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#007AFF" stopOpacity={0.3}/>
-                <stop offset="95%" stopColor="#007AFF" stopOpacity={0}/>
-              </linearGradient>
-            </defs>
-            <Area type="monotone" dataKey="val" stroke="#007AFF" fill="url(#colorVal)" strokeWidth={3} />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  </div>
-));
-
 const LiveFeedItem = React.memo(({ tx }: { tx: Transaction }) => (
   <motion.div 
     layout
@@ -164,47 +134,55 @@ export const WarRoom: React.FC = () => {
   const [timelineData, setTimelineData] = useState<any[]>([]);
 
   useEffect(() => {
-    // Mock timeline data
     const data = Array.from({ length: 24 }, (_, i) => ({
       time: `${i}:00`,
-      val: Math.floor(Math.random() * 100)
+      val: 40 + Math.floor(Math.random() * 40),
+      risk: 10 + Math.floor(Math.random() * 20)
     }));
     setTimelineData(data);
   }, []);
 
-  const kpiData = [
-    { title: 'Transactions Analyzed', value: liveFeed.length.toString(), trend: '+12%', data: timelineData },
-    { title: 'Fraud Blocked', value: blockedCount.toString(), trend: '+5', data: timelineData },
-    { title: 'Money Protected', value: `$${(blockedCount * 1240).toLocaleString()}`, trend: '+$4.2k', data: timelineData },
-    { title: 'Fraud Rate', value: `${fraudRate.toFixed(1)}%`, trend: '-0.4%', data: timelineData },
-    { title: 'Avg Detection Time', value: '420ms', trend: '-15ms', data: timelineData },
-    { title: 'Agent Accuracy', value: '99.4%', trend: '+0.2%', data: timelineData },
-  ];
-
   return (
-    <div className="p-4 lg:p-10 space-y-10 max-w-[1800px] mx-auto w-full">
-      {/* KPI Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
-        {kpiData.map((kpi, i) => (
-          <SparkCard key={i} {...kpi} />
-        ))}
+    <div className="p-6 lg:p-8 space-y-8 max-w-[1600px] mx-auto w-full min-h-screen">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-black tracking-tighter text-foreground">WAR ROOM</h1>
+          <p className="text-xs font-bold text-foreground/40 uppercase tracking-[0.3em] mt-1">Real-time Threat Intelligence</p>
+        </div>
+        <div className="flex items-center gap-3 bg-surface/50 backdrop-blur-xl border border-border p-2 rounded-2xl shadow-xl">
+          <div className="flex -space-x-2">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="w-8 h-8 rounded-full border-2 border-background bg-primary/10 flex items-center justify-center text-[10px] font-bold">
+                {String.fromCharCode(64 + i)}
+              </div>
+            ))}
+          </div>
+          <div className="h-8 w-px bg-border mx-2" />
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Active Analysts</span>
+            <span className="text-xs font-bold">12 Online</span>
+          </div>
+        </div>
       </div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-12 gap-10">
-        {/* Live Feed */}
-        <div className="col-span-12 xl:col-span-3 flex flex-col gap-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-foreground/40">
-              <Activity size={18} className="text-primary" />
-              Live Feed
+      {/* Bento Grid Layout */}
+      <div className="grid grid-cols-12 gap-6">
+        
+        {/* Left Column: Live Feed (Tall) */}
+        <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
+          <div className="flex items-center justify-between px-2">
+            <h3 className="text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-foreground/40">
+              <Activity size={14} className="text-primary" />
+              Live Signal Feed
             </h3>
-            <span className="text-[10px] font-black text-success flex items-center gap-2 uppercase tracking-widest">
-              <div className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_10px_rgba(52,199,89,0.6)]" />
-              LIVE
-            </span>
+            <div className="flex items-center gap-1.5">
+              <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+              <span className="text-[9px] font-black text-success uppercase tracking-widest">Active</span>
+            </div>
           </div>
-          <div className="card flex-1 overflow-hidden flex flex-col max-h-[700px] bg-surface">
+          
+          <div className="card flex-1 overflow-hidden flex flex-col h-[calc(100vh-300px)] min-h-[600px] bg-surface/30 border-white/5">
             <div className="overflow-y-auto flex-1 custom-scrollbar">
               <AnimatePresence initial={false}>
                 {liveFeed.map((tx) => (
@@ -212,153 +190,212 @@ export const WarRoom: React.FC = () => {
                 ))}
               </AnimatePresence>
             </div>
+            <div className="p-4 bg-surface/50 border-t border-border flex justify-center">
+              <button className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">View All Signals</button>
+            </div>
           </div>
         </div>
 
-        {/* Agent Council */}
-        <div className="col-span-12 xl:col-span-6 flex flex-col gap-6">
-          <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-foreground/40">
-            <ShieldCheck size={18} className="text-primary" />
-            Agent Council
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <AgentCard agent="Velocity" icon={Clock} isAnalyzing={isAnalyzing} result={Object.values(results)[0]} />
-            <AgentCard agent="Geographic" icon={Globe} isAnalyzing={isAnalyzing} result={Object.values(results)[1]} />
-            <AgentCard agent="Behavioral" icon={Activity} isAnalyzing={isAnalyzing} result={Object.values(results)[2]} />
-            <AgentCard agent="Pattern" icon={Target} isAnalyzing={isAnalyzing} result={Object.values(results)[3]} />
-          </div>
+        {/* Center/Right Area */}
+        <div className="col-span-12 lg:col-span-9 space-y-6">
           
-          {/* Orchestrator Panel */}
-          <div className="card p-10 bg-surface border-primary/30 relative overflow-hidden shadow-2xl">
-            <div className="absolute top-0 right-0 w-80 h-80 bg-primary/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-            
-            <div className="flex flex-col sm:flex-row justify-between items-center gap-6 mb-10 relative z-10">
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">Orchestrator Verdict</span>
-              <div className="flex gap-4">
-                <button className="btn-primary text-[10px] font-black py-3 px-8 uppercase tracking-widest shadow-[0_10px_20px_rgba(0,122,255,0.3)]">Confirm Decision</button>
-                <button className="glass-button text-[10px] font-black uppercase tracking-widest py-3 px-8">Override</button>
+          {/* Top Row: Map & Key Stats */}
+          <div className="grid grid-cols-12 gap-6">
+            {/* Map Card */}
+            <div className="col-span-12 xl:col-span-8 card bg-surface/30 border-white/5 p-0 overflow-hidden relative group min-h-[400px] shadow-2xl">
+              <div className="absolute top-6 left-6 z-10">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-foreground/40 mb-1">Global Risk Distribution</h3>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-success" />
+                    <span className="text-[10px] font-bold text-foreground/60">Safe</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-danger" />
+                    <span className="text-[10px] font-bold text-foreground/60">High Risk</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="w-full h-full flex items-center justify-center bg-[#0a0a0a]/50">
+                <ComposableMap projectionConfig={{ scale: 160 }}>
+                  <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
+                    {({ geographies }) =>
+                      geographies.map((geo) => (
+                        <Geography
+                          key={geo.rsmKey}
+                          geography={geo}
+                          fill="rgba(255,255,255,0.03)"
+                          stroke="rgba(255,255,255,0.1)"
+                          strokeWidth={0.5}
+                          style={{
+                            default: { outline: "none" },
+                            hover: { fill: "rgba(0,122,255,0.1)", outline: "none" },
+                            pressed: { outline: "none" },
+                          }}
+                        />
+                      ))
+                    }
+                  </Geographies>
+                  {liveFeed.slice(0, 20).map((tx, i) => (
+                    <Marker key={i} coordinates={[tx.location?.lng || 0, tx.location?.lat || 0]}>
+                      <motion.circle 
+                        initial={{ r: 0, opacity: 0 }}
+                        animate={{ r: 4, opacity: 1 }}
+                        transition={{ delay: i * 0.05, duration: 0.5 }}
+                        fill={tx.status === 'BLOCKED' ? '#FF3B30' : '#34C759'} 
+                        className="drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+                      />
+                      {tx.status === 'BLOCKED' && (
+                        <motion.circle 
+                          initial={{ r: 0, opacity: 0 }}
+                          animate={{ r: 12, opacity: 0 }}
+                          transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
+                          stroke="#FF3B30" 
+                          strokeWidth={1}
+                          fill="none"
+                        />
+                      )}
+                    </Marker>
+                  ))}
+                </ComposableMap>
               </div>
             </div>
-            <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
-              <div className="flex flex-col items-center md:items-start">
-                <span className="text-7xl font-black tracking-tighter text-success drop-shadow-[0_0_30px_rgba(52,199,89,0.4)]">SAFE</span>
-                <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.3em] mt-2">Final Decision</span>
+
+            {/* Quick Stats Grid */}
+            <div className="col-span-12 xl:col-span-4 grid grid-cols-2 gap-4">
+              <div className="card bg-primary/5 border-primary/20 p-5 flex flex-col justify-between group hover:bg-primary/10 transition-all">
+                <ShieldAlert className="text-primary mb-2" size={20} />
+                <div>
+                  <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Blocked Today</span>
+                  <div className="text-3xl font-black tracking-tighter mt-1">{blockedCount}</div>
+                </div>
               </div>
-              <div className="hidden md:block h-20 w-px bg-border" />
-              <div className="flex-1 w-full grid grid-cols-2 sm:grid-cols-4 gap-8">
-                {['VEL', 'GEO', 'BEH', 'PAT'].map((label, i) => (
-                  <div key={i} className="flex flex-col gap-3">
-                    <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">{label}</span>
-                    <div className="h-3 bg-surface rounded-full overflow-hidden border border-border shadow-inner">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: '75%' }}
-                        transition={{ type: "spring", stiffness: 100, damping: 20, delay: i * 0.1 }}
-                        className="h-full bg-primary shadow-[0_0_15px_rgba(0,122,255,0.6)]" 
-                      />
+              <div className="card bg-success/5 border-success/20 p-5 flex flex-col justify-between group hover:bg-success/10 transition-all">
+                <TrendingUp className="text-success mb-2" size={20} />
+                <div>
+                  <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Fraud Rate</span>
+                  <div className="text-3xl font-black tracking-tighter mt-1">{fraudRate.toFixed(2)}%</div>
+                </div>
+              </div>
+              <div className="col-span-2 card bg-surface/30 border-white/5 p-5 flex flex-col justify-between">
+                <div className="flex justify-between items-start mb-4">
+                  <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Protection Volume</span>
+                  <span className="text-[10px] font-black text-success">+18.4%</span>
+                </div>
+                <div className="h-24 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={timelineData}>
+                      <defs>
+                        <linearGradient id="colorProt" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#007AFF" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#007AFF" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <Area type="monotone" dataKey="val" stroke="#007AFF" fill="url(#colorProt)" strokeWidth={2} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="text-2xl font-black tracking-tighter mt-2">${(blockedCount * 1240).toLocaleString()}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Middle Row: Agent Council */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-2">
+              <h3 className="text-[11px] font-black uppercase tracking-[0.2em] flex items-center gap-2 text-foreground/40">
+                <ShieldCheck size={14} className="text-primary" />
+                Neural Agent Council
+              </h3>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <span className="text-[9px] font-black text-foreground/40 uppercase tracking-widest">Processing</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+              <AgentCard agent="Velocity" icon={Clock} isAnalyzing={isAnalyzing} result={Object.values(results)[0]} />
+              <AgentCard agent="Geographic" icon={Globe} isAnalyzing={isAnalyzing} result={Object.values(results)[1]} />
+              <AgentCard agent="Behavioral" icon={Activity} isAnalyzing={isAnalyzing} result={Object.values(results)[2]} />
+              <AgentCard agent="Pattern" icon={Target} isAnalyzing={isAnalyzing} result={Object.values(results)[3]} />
+            </div>
+          </div>
+
+          {/* Bottom Row: Orchestrator & Alerts */}
+          <div className="grid grid-cols-12 gap-6">
+            {/* Orchestrator */}
+            <div className="col-span-12 xl:col-span-8 card bg-surface/50 border-primary/20 p-8 relative overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] rounded-full -translate-y-1/2 translate-x-1/2" />
+              
+              <div className="flex flex-col md:flex-row items-center gap-10 relative z-10">
+                <div className="flex flex-col items-center md:items-start shrink-0">
+                  <span className="text-[10px] font-black text-foreground/20 uppercase tracking-[0.3em] mb-2">Final Verdict</span>
+                  <div className="flex items-center gap-4">
+                    <span className="text-6xl font-black tracking-tighter text-success drop-shadow-[0_0_20px_rgba(52,199,89,0.3)]">SAFE</span>
+                    <div className="p-3 bg-success/10 rounded-2xl border border-success/20">
+                      <ShieldCheck className="text-success" size={24} />
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+                </div>
+                
+                <div className="hidden md:block h-16 w-px bg-border/50" />
+                
+                <div className="flex-1 w-full space-y-6">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black text-foreground/40 uppercase tracking-widest">Consensus Confidence</span>
+                    <span className="text-xs font-black text-primary">98.4%</span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-4">
+                    {['VEL', 'GEO', 'BEH', 'PAT'].map((label, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-1.5 bg-foreground/5 rounded-full overflow-hidden">
+                          <motion.div 
+                            initial={{ width: 0 }}
+                            animate={{ width: `${80 + Math.random() * 20}%` }}
+                            className="h-full bg-primary/60 shadow-[0_0_10px_rgba(0,122,255,0.4)]" 
+                          />
+                        </div>
+                        <span className="text-[8px] font-black text-foreground/20 uppercase tracking-widest block text-center">{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
-        {/* World Map */}
-        <div className="col-span-12 xl:col-span-3 flex flex-col gap-8">
-          <h3 className="text-sm font-black uppercase tracking-[0.2em] flex items-center gap-3 text-foreground/40">
-            <Globe size={18} className="text-primary drop-shadow-[0_0_8px_rgba(0,122,255,0.5)]" />
-            World Risk Map
-          </h3>
-          <div className="card flex-1 bg-surface p-6 min-h-[400px] relative overflow-hidden group shadow-2xl">
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-            <div className="w-full h-full flex items-center justify-center">
-              <ComposableMap projectionConfig={{ scale: 180 }}>
-                <Geographies geography="https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json">
-                  {({ geographies }) =>
-                    geographies.map((geo) => (
-                      <Geography
-                        key={geo.rsmKey}
-                        geography={geo}
-                        fill="var(--surface)"
-                        stroke="var(--border)"
-                        strokeWidth={0.5}
-                        style={{
-                          default: { outline: "none" },
-                          hover: { fill: "var(--primary)", fillOpacity: 0.1, outline: "none" },
-                          pressed: { outline: "none" },
-                        }}
-                      />
-                    ))
-                  }
-                </Geographies>
-                {liveFeed.slice(0, 15).map((tx, i) => (
-                  <Marker key={i} coordinates={[tx.location?.lng || 0, tx.location?.lat || 0]}>
-                    <motion.circle 
-                      initial={{ r: 0, opacity: 0 }}
-                      animate={{ r: 5, opacity: 1 }}
-                      transition={{ delay: i * 0.1, duration: 1 }}
-                      fill={tx.status === 'BLOCKED' ? '#FF3B30' : '#34C759'} 
-                      className="drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"
-                    />
-                    <motion.circle 
-                      initial={{ r: 0, opacity: 0 }}
-                      animate={{ r: 15, opacity: 0 }}
-                      transition={{ repeat: Infinity, duration: 2, delay: i * 0.1 }}
-                      stroke={tx.status === 'BLOCKED' ? '#FF3B30' : '#34C759'} 
-                      strokeWidth={1}
-                      fill="none"
-                    />
-                  </Marker>
-                ))}
-              </ComposableMap>
-            </div>
-          </div>
-          
-          {/* Alerts */}
-          <div className="space-y-4">
-            <div className="card p-5 bg-danger/5 border-danger/20 flex items-center gap-4 shadow-lg">
-              <div className="p-2 bg-danger/10 rounded-xl">
-                <AlertTriangle className="text-danger" size={20} />
+                <div className="flex flex-col gap-2 shrink-0">
+                  <button className="btn-primary text-[9px] font-black py-2.5 px-6 uppercase tracking-widest">Approve</button>
+                  <button className="glass-button text-[9px] font-black py-2.5 px-6 uppercase tracking-widest">Override</button>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-black tracking-tight">High Risk Alert</p>
-                <p className="text-[11px] font-medium text-foreground/30 mt-1">Multi-card sweep detected in Lagos, NG</p>
-              </div>
-              <span className="text-[10px] font-black text-foreground/20 uppercase tracking-widest">2m ago</span>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* Bottom Timeline */}
-      <div className="card p-8 h-64 bg-surface shadow-2xl">
-        <div className="flex justify-between items-center mb-8">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-foreground/20">Risk Timeline (24h)</span>
-          <div className="flex gap-6 text-[10px] font-black uppercase tracking-widest">
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-primary shadow-[0_0_10px_rgba(0,122,255,0.5)]" />
-              <span className="text-foreground/40">VOLUME</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-danger shadow-[0_0_10px_rgba(255,59,48,0.5)]" />
-              <span className="text-foreground/40">RISK SCORE</span>
+            {/* Recent Alerts */}
+            <div className="col-span-12 xl:col-span-4 space-y-4">
+              <div className="card p-4 bg-danger/5 border-danger/20 flex items-center gap-4 group hover:bg-danger/10 transition-all cursor-pointer">
+                <div className="p-2 bg-danger/10 rounded-xl group-hover:scale-110 transition-transform">
+                  <AlertTriangle className="text-danger" size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black tracking-tight truncate">High Risk: Card Sweep</p>
+                  <p className="text-[10px] font-medium text-foreground/30 mt-0.5 truncate">Lagos, NG • 14 attempts</p>
+                </div>
+                <span className="text-[9px] font-black text-foreground/20 uppercase">2m</span>
+              </div>
+              <div className="card p-4 bg-warning/5 border-warning/20 flex items-center gap-4 group hover:bg-warning/10 transition-all cursor-pointer">
+                <div className="p-2 bg-warning/10 rounded-xl group-hover:scale-110 transition-transform">
+                  <AlertTriangle className="text-warning" size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-black tracking-tight truncate">Velocity Spike</p>
+                  <p className="text-[10px] font-medium text-foreground/30 mt-0.5 truncate">User: @jdoe_99 • 200% inc.</p>
+                </div>
+                <span className="text-[9px] font-black text-foreground/20 uppercase">8m</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="h-full">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={timelineData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-              <XAxis dataKey="time" hide />
-              <YAxis hide />
-              <Tooltip 
-                contentStyle={{ backgroundColor: 'var(--bg)', border: '1px solid var(--border)', borderRadius: '1rem', backdropFilter: 'blur(10px)' }}
-                itemStyle={{ color: 'var(--fg)', fontSize: '10px', fontWeight: 'bold' }}
-              />
-              <Line type="monotone" dataKey="val" stroke="#007AFF" strokeWidth={4} dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
+
         </div>
       </div>
     </div>

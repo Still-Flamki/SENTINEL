@@ -97,3 +97,28 @@ export interface CaseFile {
   investigationSteps: InvestigationStep[];
   bankLetterDraft: string | null;
 }
+
+export interface AIAgent {
+  id: string;
+  name: string;
+  type: 'velocity' | 'geo' | 'behavior' | 'pattern' | 'custom';
+  status: 'ACTIVE' | 'INACTIVE' | 'TRAINING' | 'ERROR';
+  performance: {
+    accuracy: number;
+    precision: number;
+    recall: number;
+    latency: number;
+  };
+  config: {
+    threshold: number;
+    learningRate: number;
+    dataSources: string[];
+    lastTrained: string;
+  };
+  history: {
+    date: string;
+    accuracy: number;
+    latency: number;
+  }[];
+  description: string;
+}

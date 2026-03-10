@@ -15,9 +15,10 @@ import { Config } from './components/config/Config';
 import { Reports } from './components/reports/Reports';
 import { Team } from './components/team/Team';
 import { IntelligenceHub } from './components/intelligence/IntelligenceHub';
+import { AgentsManager } from './components/agents/AgentsManager';
 
 const SCREENS = [
-  'vault', 'warroom', 'transactions', 'intelligence', 'investigation', 
+  'vault', 'warroom', 'transactions', 'intelligence', 'agents', 'investigation', 
   'ringmap', 'analytics', 'casefiles', 'reports', 'team', 'config'
 ];
 
@@ -57,6 +58,7 @@ const App: React.FC = () => {
       case 'investigation': return <InvestigationDesk />;
       case 'ringmap': return <FraudRingMap />;
       case 'intelligence': return <IntelligenceHub />;
+      case 'agents': return <AgentsManager />;
       case 'analytics': return <Analytics />;
       case 'casefiles': return <CaseFiles />;
       case 'reports': return <Reports />;
@@ -83,17 +85,16 @@ const App: React.FC = () => {
         <Header title={activeScreen} />
         
         <div className="flex-1 overflow-y-auto overflow-x-hidden relative">
-          <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={activeScreen}
-              custom={direction}
-              initial={{ opacity: 0, y: direction * 400, filter: 'blur(10px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -direction * 400, filter: 'blur(10px)' }}
+              initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
               transition={{ 
-                duration: 0.6, 
+                duration: 0.4, 
                 ease: [0.16, 1, 0.3, 1],
-                opacity: { duration: 0.3 }
+                opacity: { duration: 0.2 }
               }}
               className="w-full h-full"
             >

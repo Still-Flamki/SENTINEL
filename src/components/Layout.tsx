@@ -1,5 +1,22 @@
 import React from 'react';
-import { Shield, Activity, Search, Map, BarChart3, FileText, Settings, LogOut, Bell } from 'lucide-react';
+import { 
+  Shield, 
+  Activity, 
+  Search, 
+  Map, 
+  BarChart3, 
+  FileText, 
+  Settings, 
+  LogOut, 
+  Bell,
+  Lock,
+  CreditCard,
+  Cpu,
+  Share2,
+  ClipboardCheck,
+  Users,
+  Zap
+} from 'lucide-react';
 import { cn } from '../utils';
 import { motion } from 'motion/react';
 
@@ -36,13 +53,16 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ icon: Icon, label, active, on
 
 export const Sidebar: React.FC<{ activeTab: string; setActiveTab: (tab: string) => void }> = ({ activeTab, setActiveTab }) => {
   const menuItems = [
-    { id: 'vault', label: 'Vault', icon: Shield },
-    { id: 'warroom', label: 'War Room', icon: Activity },
-    { id: 'transactions', label: 'Ledger', icon: Search },
-    { id: 'investigation', label: 'Forensics', icon: Search },
-    { id: 'ringmap', label: 'Network', icon: Map },
-    { id: 'analytics', label: 'Intelligence', icon: BarChart3 },
-    { id: 'cases', label: 'Archives', icon: FileText },
+    { id: 'vault', label: 'Account Vault', icon: Lock },
+    { id: 'warroom', label: 'War Room', icon: Zap },
+    { id: 'transactions', label: 'Transactions', icon: CreditCard },
+    { id: 'council', label: 'AI Council', icon: Cpu },
+    { id: 'investigation', label: 'Investigation', icon: Search },
+    { id: 'ringmap', label: 'Fraud Ring Map', icon: Share2 },
+    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
+    { id: 'cases', label: 'Case Files', icon: FileText },
+    { id: 'reports', label: 'Reports & Audits', icon: ClipboardCheck },
+    { id: 'team', label: 'Team & Access', icon: Users },
   ];
 
   return (
@@ -57,7 +77,7 @@ export const Sidebar: React.FC<{ activeTab: string; setActiveTab: (tab: string) 
         </div>
       </div>
 
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-1 overflow-y-auto custom-scrollbar pr-2">
         {menuItems.map((item) => (
           <SidebarItem
             key={item.id}
@@ -72,7 +92,7 @@ export const Sidebar: React.FC<{ activeTab: string; setActiveTab: (tab: string) 
       <div className="pt-6 border-t border-white/[0.05] space-y-1">
         <SidebarItem 
           icon={Settings} 
-          label="Config" 
+          label="Settings" 
           active={activeTab === 'config'}
           onClick={() => setActiveTab('config')} 
         />

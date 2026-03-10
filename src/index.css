@@ -5,14 +5,14 @@
   --color-foreground: var(--fg);
   --color-surface: var(--surface);
   --color-border: var(--border);
-  --color-primary: #007AFF;
+  --color-primary: #00FF94; /* Neon Green for high-tech feel */
   --color-danger: #FF3B30;
-  --color-warning: #FF9500;
-  --color-success: #34C759;
-  --color-accent: #AF52DE; /* Apple Purple */
+  --color-warning: #FFD600;
+  --color-success: #00FF94;
+  --color-accent: #007AFF; 
   
-  --font-sans: "SF Pro Display", "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "SF Mono", "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
   --radius-xl: 1.5rem;
   --radius-2xl: 2rem;
@@ -20,41 +20,35 @@
 }
 
 :root {
-  --bg: #ffffff;
-  --fg: #1d1d1f;
-  --surface: #f5f5f7;
-  --border: rgba(0, 0, 0, 0.08);
+  --bg: #F8F9FA;
+  --fg: #0A0A0B;
+  --surface: #FFFFFF;
+  --border: #E9ECEF;
   --glass-bg: rgba(255, 255, 255, 0.8);
   --glass-border: rgba(0, 0, 0, 0.05);
-  --card-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.05);
-  --text-gradient-start: #1d1d1f;
-  --text-gradient-end: #515154;
-  --mesh-bg: #f5f5f7;
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+  --text-gradient-start: #0A0A0B;
+  --text-gradient-end: #495057;
+  --mesh-bg: #F8F9FA;
   --mesh-gradient: 
-    radial-gradient(at 10% 10%, hsla(280, 80%, 95%, 1) 0, transparent 60%), 
-    radial-gradient(at 90% 10%, hsla(200, 80%, 95%, 1) 0, transparent 60%), 
-    radial-gradient(at 50% 50%, hsla(330, 80%, 95%, 1) 0, transparent 60%), 
-    radial-gradient(at 10% 90%, hsla(40, 80%, 95%, 1) 0, transparent 60%), 
-    radial-gradient(at 90% 90%, hsla(160, 80%, 95%, 1) 0, transparent 60%);
+    linear-gradient(rgba(0, 255, 148, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 148, 0.03) 1px, transparent 1px);
 }
 
 .dark {
-  --bg: #000000;
-  --fg: #ffffff;
-  --surface: #1c1c1e;
-  --border: rgba(255, 255, 255, 0.1);
-  --glass-bg: rgba(28, 28, 30, 0.8);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
-  --text-gradient-start: #ffffff;
-  --text-gradient-end: rgba(255, 255, 255, 0.5);
-  --mesh-bg: #000000;
+  --bg: #050505;
+  --fg: #FFFFFF;
+  --surface: #0A0A0B;
+  --border: #1A1A1C;
+  --glass-bg: rgba(10, 10, 11, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.05);
+  --card-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+  --text-gradient-start: #FFFFFF;
+  --text-gradient-end: #ADB5BD;
+  --mesh-bg: #050505;
   --mesh-gradient: 
-    radial-gradient(at 10% 10%, hsla(280, 80%, 15%, 1) 0, transparent 60%), 
-    radial-gradient(at 90% 10%, hsla(200, 80%, 15%, 1) 0, transparent 60%), 
-    radial-gradient(at 50% 50%, hsla(330, 80%, 15%, 1) 0, transparent 60%), 
-    radial-gradient(at 10% 90%, hsla(40, 80%, 15%, 1) 0, transparent 60%), 
-    radial-gradient(at 90% 90%, hsla(160, 80%, 15%, 1) 0, transparent 60%);
+    linear-gradient(rgba(0, 255, 148, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 148, 0.05) 1px, transparent 1px);
 }
 
 @layer base {
@@ -147,7 +141,7 @@
   }
 }
 
-/* Liquid Mesh Background */
+/* Technical Grid Background */
 .liquid-mesh {
   position: fixed;
   top: 0;
@@ -157,9 +151,15 @@
   z-index: -2;
   background-color: var(--mesh-bg);
   background-image: var(--mesh-gradient);
-  filter: blur(100px) saturate(180%);
-  animation: mesh-flow 30s ease-in-out infinite alternate;
+  background-size: 40px 40px;
   transition: background-color 0.5s ease;
+}
+
+.liquid-mesh::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, transparent 0%, var(--bg) 80%);
 }
 
 /* Floating Blobs for depth */
