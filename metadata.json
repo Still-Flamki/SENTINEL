@@ -1,0 +1,7 @@
+{
+  "name": "SENTINEL",
+  "description": "Financial Fraud Intelligence Platform powered by autonomous AI agents for real-time, multi-account protection.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
